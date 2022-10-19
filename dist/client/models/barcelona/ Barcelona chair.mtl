@@ -1,0 +1,19 @@
+#
+## Alias OBJ Material File
+# Exported from SketchUp, (c) 2000-2012 Trimble Navigation Limited
+
+newmtl Tecido_Barcelona_chair
+Ka 0.000000 0.000000 0.000000
+Kd 0.227451 0.227451 0.227451
+Ks 0.330000 0.330000 0.330000
+
+newmtl Cromado_Barcelona_Chair
+Ka 0.000000 0.000000 0.000000
+Kd 0.678431 0.678431 0.678431
+Ks 0.330000 0.330000 0.330000
+
+newmtl Tecido_el_sticos_barcelona_chair
+Ka 0.000000 0.000000 0.000000
+Kd 0.227451 0.227451 0.227451
+Ks 0.330000 0.330000 0.330000
+

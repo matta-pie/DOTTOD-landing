@@ -1,0 +1,79 @@
+@font-face {
+    font-family: 'Victor Mono';
+    src:  url('../fonts/VictorMono-Regular.woff2') format('woff2');
+}
+@font-face {
+    font-family: "Victor Mono";
+    src: url('../fonts/VictorMono-Bold.woff2') format('woff2');
+    font-weight: bold;
+    font-style: normal;
+}
+body {
+    overflow: hidden;
+    margin: 0px;
+}
+h1, h2, h3, h4, h5, p {
+    color: white;
+    font-family: Victor Mono, monospace;
+}
+.ascii-title-wrapper {
+    margin-top: 6%;
+}
+.d-none-dottod {
+    display: none;
+}
+.ascii-title {
+    white-space: pre-wrap;
+    font-size: 6px;
+}
+.btn {
+    border-radius: 0px;
+}
+.btn-dark {
+    background-color: transparent;
+    border: 1px solid white;
+}
+.btn-dark:hover {
+    background-color: transparent;
+    border: 2px solid white;
+}
+.btn-enter-wrapper {
+    margin-top: 15%;
+}
+.description-wrapper {
+    max-width: 100%;
+}
+.description-text {
+    font-size: 12px;
+}
+.margin-projects {
+    margin-top: 3rem;
+}
+.margin-description {
+    margin-top: 4rem;
+}
+#landing_wrapper {
+    visibility: visible;
+    opacity: 1;
+    -webkit-transition: opacity 1200ms, visibility 1200ms;
+    transition: opacity 1200ms, visibility 1200ms;
+}
+
+@media (min-width: 992px) {
+    .ascii-title {
+        white-space: pre-wrap;
+        font-size: 12px;
+    }
+    .description-text {
+        font-size: 16px;
+    }
+    .description-wrapper {
+        max-width: 70%;
+    }
+    .margin-projects {
+        margin-top: 3rem;
+    }
+    .margin-description {
+        margin-top: 5rem;
+    }
+}
