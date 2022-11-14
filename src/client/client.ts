@@ -9,6 +9,7 @@ let scene: THREE.Scene;
 let renderer: THREE.WebGLRenderer;
 const pointer: THREE.Vector2 = new THREE.Vector2();
 const raycaster: THREE.Raycaster = new THREE.Raycaster();
+let controls : OrbitControls;
 
 let floorMat: THREE.MeshStandardMaterial;
 let textureLoader: THREE.TextureLoader
@@ -61,6 +62,7 @@ let dottod_object_paths = [
 ]
 let tech_specs_container: HTMLElement | null = null;
 let spec_wrapper_close: HTMLElement | null = null;
+let is_tech_spec_open: boolean = false;
 
 init();
 animate();
@@ -92,7 +94,7 @@ function init() {
     addGround();
     loadModels();
 
-    const controls = new OrbitControls( camera, renderer.domElement );
+    controls = new OrbitControls( camera, renderer.domElement );
     controls.minDistance = 1;
     controls.maxDistance = 20;
     controls.maxPolarAngle = Math.PI / 2.2;
@@ -115,6 +117,7 @@ function init() {
         let tl = gsap.timeline({onComplete: () => {
             // @ts-ignore
             tech_specs_container.style.display = "none";
+            is_tech_spec_open = false;
         }});
         tl.to("#tech_specs_container", {opacity: 0, duration: 1});
     });
@@ -128,6 +131,7 @@ function onWindowResize() {
 }
 
 function onMouseClick(event: any) {
+    if(is_tech_spec_open) return;
     pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
     pointer.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
     raycaster.setFromCamera(pointer, camera);
@@ -147,8 +151,10 @@ function onMouseClick(event: any) {
             }
 
             let tl = gsap.timeline({onComplete: () => {
+                    controls.update();
                     // @ts-ignore
                     tech_specs_container.style.display = "block";
+                    is_tech_spec_open = true;
                     gsap.to("#tech_specs_container", {opacity: 1, duration: 1});
             }});
             tl.to(camera.rotation, {
