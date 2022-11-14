@@ -135,6 +135,7 @@ function onMouseClick(event: any) {
     const intersects = raycaster.intersectObjects(dottod_raycaster_objects);
     if (intersects.length > 0) {
         let piece: Piece | undefined = dottod_object.find((p: Piece) => {
+            console.log(p.original_model.name, intersects[0].object.parent!.name,  p.ai_twin_model.name)
             return p.original_model.name === intersects[0].object.parent!.name || p.ai_twin_model.name === intersects[0].object.parent!.name;
         });
         if (piece) {
