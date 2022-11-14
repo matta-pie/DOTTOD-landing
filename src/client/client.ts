@@ -1,61 +1,66 @@
 import * as THREE from 'three'
+import gsap from 'gsap';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer'
 
 let camera: THREE.PerspectiveCamera;
 let scene: THREE.Scene;
 let renderer: THREE.WebGLRenderer;
+const pointer: THREE.Vector2 = new THREE.Vector2();
+const raycaster: THREE.Raycaster = new THREE.Raycaster();
+
 let floorMat: THREE.MeshStandardMaterial;
 let textureLoader: THREE.TextureLoader
 let bulbLight: THREE.PointLight;
-let bulbMat, bulbMat2: THREE.MeshStandardMaterial;
-let composer: EffectComposer;
-let mixer: THREE.AnimationMixer;
+let ambientLight: THREE.AmbientLight;
 let clock: THREE.Clock;
 let roomba_heading: THREE.Vector3 = new THREE.Vector3;
 let roomba: any;
-let dottod_object: Piece[] = []
-//, hemiLight, stats;
+let dottod_object: Piece[] = [];
+let dottod_raycaster_objects: any[] = [];
 let dottod_object_paths = [
     {
-        "path": "models/wassily/",
-        "obj": "Wassily Chair.obj",
-        "mtl": "Wassily Chair.mtl",
-        "x": -5,
-        "z": -5,
-    },
-    {
-        "path": "models/eames/",
-        "obj": "Eames Wire Chair.obj",
-        "mtl": "Eames Wire Chair.mtl",
-        "x": -5,
-        "z": 5,
+        "path": "models/enzo_mari/",
+        "obj": "enzo_mari.obj",
+        "mtl": "enzo_mari.mtl",
+        "x": -2.5,
+        "z": 1,
+        "scale": 0.025,
+        "name": "enzo_og",
+        "ai_twin": {
+            "path": "models/aienzo/",
+            "obj": "ai_enzo.obj",
+            "mtl": "ai_enzo.mtl",
+            "x": 1.5,
+            "z": 1,
+            "scale": 0.025,
+            "name": "enzo_ai",
+        }
     },
     {
         "path": "models/diamond/",
-        "obj": "diamond chair bertoia.obj",
-        "mtl": "diamond chair bertoia.mtl",
-        "x": 2,
-        "z": 6,
+        "obj": "diamond.obj",
+        "mtl": "diamond.mtl",
+        "x": 5,
+        "z": -5.5,
+        "scale": 0.05,
+        "name": "diamond_og",
+        "ai_twin": null,
     },
     {
         "path": "models/cadeira/",
         "obj": "CadeiraCescaMarcel.obj",
         "mtl": "CadeiraCescaMarcel.mtl",
-        "x": 6,
-        "z": -2,
+        "x": -6,
+        "z": -5,
+        "scale": 0.05,
+        "name": "cesca_og",
+        "ai_twin": null,
     },
 ]
-const params = {
-    shadows: true,
-    exposure: 0.68,
-    hemiIrradiance: 0.0001,
-    bloomStrength: 1,
-    bloomThreshold: 0.2,
-    bloomRadius: 0
-};
+let tech_specs_container: HTMLElement | null = null;
+let spec_wrapper_close: HTMLElement | null = null;
 
 init();
 animate();
@@ -85,19 +90,35 @@ function init() {
 
     addLights();
     addGround();
-    loadModel();
+    loadModels();
 
     const controls = new OrbitControls( camera, renderer.domElement );
     controls.minDistance = 1;
     controls.maxDistance = 20;
+    controls.maxPolarAngle = Math.PI / 2.2;
+    controls.update();
 
     const btn_enter = document.getElementById("btn_enter");
     if(btn_enter) {
         btn_enter.addEventListener("click", () => {
-            dottod_object.forEach((piece: Piece) => scene.add(piece.object))
+            dottod_object.forEach((piece: Piece) => {
+                scene.add(piece.original_model);
+                if(piece.ai_twin_model) scene.add(piece.ai_twin_model);
+            })
         });
     }
-    window.addEventListener( 'resize', onWindowResize );
+    window.addEventListener('resize', onWindowResize);
+    window.addEventListener('mouseup', onMouseClick);
+    tech_specs_container = document.getElementById("tech_specs_container");
+    spec_wrapper_close = document.getElementById("spec_wrapper_close");
+    spec_wrapper_close!.addEventListener('mouseup', function () {
+        let tl = gsap.timeline({onComplete: () => {
+            // @ts-ignore
+            tech_specs_container.style.display = "none";
+        }});
+        tl.to("#tech_specs_container", {opacity: 0, duration: 1});
+    });
+
 }
 
 function onWindowResize() {
@@ -106,17 +127,58 @@ function onWindowResize() {
     renderer.setSize( window.innerWidth, window.innerHeight );
 }
 
+function onMouseClick(event: any) {
+    pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+    pointer.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+    raycaster.setFromCamera(pointer, camera);
+    // calculate objects intersecting the picking ray
+    const intersects = raycaster.intersectObjects(dottod_raycaster_objects);
+    if (intersects.length > 0) {
+        let piece: Piece | undefined = dottod_object.find((p: Piece) => {
+            return p.original_model.name === intersects[0].object.parent!.name || p.ai_twin_model.name === intersects[0].object.parent!.name;
+        });
+        if (piece) {
+            let wp: THREE.Vector3 = piece.getCenterPoint();
+            if (piece.original_model.name === "enzo_og") {
+                wp = piece.getInBetweenPoint();
+            }
+
+            let tl = gsap.timeline({onComplete: () => {
+                    // @ts-ignore
+                    tech_specs_container.style.display = "block";
+                    gsap.to("#tech_specs_container", {opacity: 1, duration: 1});
+            }});
+            tl.to(camera.rotation, {
+                x: 0,
+                y: 0,
+                z: 0,
+                duration: 0.5
+            }).to(camera.position, {
+                x: wp.x,
+                y: 1.5,
+                z: wp.z + 4,
+                duration: 2,
+            });
+        }
+    }
+}
+
 function animate() {
     requestAnimationFrame(animate)
     const delta = clock.getDelta();
     if(roomba) moveRoomba(0.005);
-    if(scene.getObjectByName('piece_0')) {
+    if(scene.getObjectByName('enzo_og')) {
         dottod_object.forEach((piece: Piece) => {
-            if (piece.object.position.y < 0) {
-                piece.object.position.y += delta * 0.5;
-                if (piece.object.position.y >= 0) {
-                    bulbLight.power = 800;
+            if (piece.original_model.position.y < 0) {
+                piece.original_model.position.y += delta * 0.5;
+                if (piece.original_model.position.y >= 0) {
                     scene.add(piece.spotLight);
+                }
+            }
+            if (piece.ai_twin_model && piece.ai_twin_model.position.y < 0) {
+                piece.ai_twin_model.position.y += delta * 0.5;
+                if (piece.ai_twin_model.position.y >= 0) {
+                    scene.add(piece.ai_twin_spotLight);
                 }
             }
         })
@@ -125,9 +187,7 @@ function animate() {
 }
 
 function render() {
-    renderer.toneMappingExposure = Math.pow( params.exposure, 5.0 ); // to allow for very bright scenes.
-    renderer.shadowMap.enabled = params.shadows;
-    renderer.render(scene, camera)
+    renderer.render(scene, camera);
 }
 
 function moveRoomba(speed: number) {
@@ -151,22 +211,14 @@ function moveRoomba(speed: number) {
 
 function addLights() {
     // LIGHT
-    bulbLight = new THREE.PointLight( 0xffee88, 1, 100, 2 );
+    bulbLight = new THREE.PointLight( 0xfffdef, 1, 100, 2 );
     bulbLight.position.set( 0, 4, 0 );
     bulbLight.castShadow = true;
-    bulbLight.power = 2000;
-    // to show where the light is
-//     const bulbGeometry = new THREE.SphereGeometry( 0.02, 16, 8 );
-//     bulbMat = new THREE.MeshStandardMaterial( {
-//         emissive: 0xffffee,
-//         emissiveIntensity: 100,
-//         color: 0x000000
-//     } );
-    // bulbLight.add( new THREE.Mesh( bulbGeometry, bulbMat ) );
+    bulbLight.power = 500;
     scene.add(bulbLight);
-
-    //var light = new THREE.AmbientLight(0xffee88, 1);
-    //scene.add( light );
+    //ambientLight = new THREE.AmbientLight( 0xfffdef );
+    //ambientLight.intensity = 0.4;
+    //scene.add(ambientLight);
 }
 
 function addGround(){
@@ -204,23 +256,7 @@ function addGround(){
     scene.add(floorMesh);
 }
 
-function loadModel() {
-    new MTLLoader()
-    .setPath( 'models/test/' )
-    .load( 'test.mtl', function ( materials ) {
-        materials.preload();
-        new OBJLoader()
-        .setMaterials( materials )
-        .setPath( 'models/test/' )
-        .load( 'test.obj', function ( object ) {
-            object.position.set(-0.57,0,0);
-            object.traverse(function (child){child.castShadow = true;});
-            object.scale.set(0.05,0.05,0.05);
-            scene.add(object);
-            console.log(object);
-            }, onProgress );
-    });
-
+function loadModels() {
     new MTLLoader()
     .setPath( 'models/roomba/' )
     .load( 'roomba560.mtl', function ( materials ) {
@@ -228,33 +264,54 @@ function loadModel() {
         new OBJLoader()
         .setMaterials( materials )
         .setPath( 'models/roomba/' )
-        .load( 'roomba560.obj', function ( object ) {
+        .load( 'roomba560.obj', function(object) {
             object.position.set(-5,0,5);
             object.traverse(function (child){child.castShadow = true;});
             object.scale.set(0.002,0.002,0.002);
             roomba = object;
-            scene.add( object );
-            console.log(object);
+            scene.add(object);
+            dottod_raycaster_objects.push(object);
             }, onProgress );
     });
 
     dottod_object_paths.forEach((e: any) => {
+        let piece: Piece;
         new MTLLoader()
         .setPath(e.path)
-        .load(e.mtl, function ( materials ) {
+        .load(e.mtl, function (materials) {
             materials.preload();
             new OBJLoader()
-            .setMaterials( materials )
+            .setMaterials(materials)
             .setPath(e.path)
             .load(e.obj, function (object) {
-                object.name = 'piece_' + dottod_object.length;
+                object.name = e.name;
                 object.position.set(e.x,-2,e.z);
                 object.traverse(function (child){child.castShadow = true;});
-                object.scale.set(0.05,0.05,0.05);
-                //Piece
-                dottod_object.push(new Piece(object));
+                object.scale.set(e.scale,e.scale,e.scale);
+                dottod_raycaster_objects.push(object);
+                piece = new Piece(object);
+                dottod_object.push(piece);
                 }, onProgress );
         });
+        // if there's an ai twin
+        if (e.ai_twin !== null) {
+            new MTLLoader()
+            .setPath(e.ai_twin.path)
+            .load(e.ai_twin.mtl, function ( materials ) {
+                materials.preload();
+                new OBJLoader()
+                    .setMaterials( materials )
+                    .setPath(e.ai_twin.path)
+                    .load(e.ai_twin.obj, function (object) {
+                        object.name = e.ai_twin.name;
+                        object.position.set(e.ai_twin.x,-2,e.ai_twin.z);
+                        object.traverse(function (child){child.castShadow = true;});
+                        object.scale.set(e.ai_twin.scale,e.ai_twin.scale,e.ai_twin.scale);
+                        dottod_raycaster_objects.push(object);
+                        piece.setTwin(object);
+                    }, onProgress );
+            });
+        }
     })
 
     const onProgress = function ( xhr: any ) {
@@ -266,37 +323,49 @@ function loadModel() {
 }
 
 class Piece {
-    object: any;
-    spotLight: THREE.SpotLight;
+    original_model: any;
+    ai_twin_model: any = null;
+    spotLight: THREE.SpotLight = new THREE.SpotLight(0xffffff, 1000);
+    ai_twin_spotLight: THREE.SpotLight = new THREE.SpotLight(0xffffff, 1000);;
+
     constructor(object: any) {
-        this.object = object;
+        this.original_model = object;
+        this.assignSpotlight(object, this.spotLight);
+    }
 
-        const texture = textureLoader.load('textures/texture_eames1.jpeg');
-        texture.minFilter = THREE.LinearFilter;
-        texture.magFilter = THREE.LinearFilter;
-        texture.encoding = THREE.sRGBEncoding;
+    getCenterPoint(object: any = this.original_model) {
+        const box = new THREE.Box3().setFromObject(object);
+        let center = new THREE.Vector3();
+        box.getCenter(center)
+        return center;
+    }
 
-        this.spotLight = new THREE.SpotLight( 0xffffff, 1000 );
-        this.spotLight.position.set(object.position.x, 8, object.position.z);
-        this.spotLight.angle = Math.PI / 10;
-        this.spotLight.penumbra = 1;
-        this.spotLight.decay = 2;
-        this.spotLight.distance = 10;
-        this.spotLight.power = 2500;
-        // @ts-ignore
-        this.spotLight.map = texture;
+    getInBetweenPoint() {
+        const og_center: THREE.Vector3 = this.getCenterPoint(this.original_model);
+        const ai_center: THREE.Vector3 = this.getCenterPoint(this.ai_twin_model);
+        return new THREE.Vector3((og_center.x + ai_center.x) / 2, 1.5, (og_center.z + ai_center.z) / 2)
+    }
 
-        this.spotLight.castShadow = true;
-        this.spotLight.shadow.mapSize.width = 1024;
-        this.spotLight.shadow.mapSize.height = 1024;
-        this.spotLight.shadow.camera.near = 10;
-        this.spotLight.shadow.camera.far = 200;
-        this.spotLight.shadow.focus = 1;
+    assignSpotlight(object: any, spotLight: THREE.SpotLight) {
+        spotLight.position.set(object.position.x, 5, object.position.z + 5);
+        spotLight.angle = Math.PI / 10;
+        spotLight.penumbra = 1;
+        spotLight.decay = 1.8;
+        spotLight.distance = 10;
+        spotLight.power = 200;
 
-        this.spotLight.target.position.set(object.position.x, 1, object.position.z);
-        this.spotLight.target.updateMatrixWorld();
-        // scene.add(this.spotLight);
-        //      const lightHelper = new THREE.SpotLightHelper( this.spotLight );
-        //      scene.add( lightHelper );
+        spotLight.castShadow = true;
+
+        const object_center: THREE.Vector3 = this.getCenterPoint(object);
+        spotLight.target.position.set(object_center.x, 1, object_center.z);
+        spotLight.target.updateMatrixWorld();
+
+        // const spotLightHelper = new THREE.SpotLightHelper(spotLight);
+        // scene.add(spotLightHelper);
+    }
+
+    setTwin(object: any) {
+        this.ai_twin_model = object;
+        this.assignSpotlight(object, this.ai_twin_spotLight);
     }
 }

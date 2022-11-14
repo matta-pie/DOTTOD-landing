@@ -35,9 +35,8 @@
             </div>
         <div class="d-flex justify-content-around margin-description">
                 <p class="text-center description-wrapper description-text">
-                    The digital gallery DOTTOD is a speculative project that aims to provoke in its visitors a reflection on the point of contact between art, design, politics and technology. <br>
-                    The aim is to create a gallery of digital and physical works where the curator, and sometimes the creator, is an artificial intelligence that in a mechanised and “impartially” interprets a subject or object. <br>
-                    The exhibited works become a starting point for further research and discussion. <br>
+                    You are about to enter dottod, an online gallery of digital and physical works where the curator, and sometimes the creator, is an artificial intelligence that interprets a subject or object in a mechanised and “impartial” way.
+                    The current exhibition on show is FURNITURAI an ode to furniture design. We decided to use an image generative AI to represent its interpretations of iconic design, we become mere providers. We provide the platform, the hands and the materials to phisicalise the digital outcome of the AI. <br>
                 </p>
             </div>
             <div class="mx-auto description-wrapper">
@@ -51,60 +50,118 @@
                 </div>
             </div>
         </div>
-        <script>
-            var btn_enter = document.getElementById("btn_enter");
-            var landing_wrapper = document.getElementById("landing_wrapper");
-            btn_enter.addEventListener("click", (event) => {
-                landing_wrapper.style.visibility = "hidden";
-                landing_wrapper.style.opacity = 0;
-            });
-            var fdo_wrapper = document.getElementById("first_dash_wrapper");
-            var fdo_wrapper_interval = null;
-            fdo_wrapper.addEventListener("mouseenter", (event) => {
-                // highlight the mouseenter target
-                fdo_wrapper.innerText = "italian politics_";
-                // reset the color after a short delay
-                fdo_wrapper_interval = setInterval(function () {
-                    if (fdo_wrapper.innerHTML === "italian politics_") {
-                        fdo_wrapper.innerHTML = "italian politics&nbsp;";
-                    } else {
-                        fdo_wrapper.innerHTML = "italian politics_";
-                    }
-                }, 500);
-            }, false);
+    </div>
+    <div id="tech_specs_container">
+        <div class="container h-100">
+            <div class="row d-flex align-items-center justify-content-center h-100">
+                <div id="col_spec_wrapper" style="max-width: 1000px;">
+                    <div class="row tech-spec-wrapper" id="spec_wrapper">
+                        <button id="spec_wrapper_close" type="button" class="btn-close btn-close-white" aria-label="Close"></button>
+                        <div class="col-12 p-3">
+                            <h5 class="text-title">Enzo Mari Sedia 1</h5>
+                            <h5 class="text-title">Designed by Enzo Mari 1974</h5>
+                        </div>
+                        <div class="col-6 mt-3 p-3">
+                            <h6 class="text-white mb-3">Details</h6>
+                            <p class="text-white mb-1"><b><small>DESCRIPTION</small></b></p>
+                            <p><small class="text-muted">
+                                chair made out standardised cuts of timber. it consists of 4 wooden legs, a wooden plank as a back rest and a heavy bottom cube-shaped seat.  The object has four vertical wooden elements designed to support a square structure that will serve as a support for a horizontal seat. These objects are the legs and the seat. Two other vertical elements, angled backward, support a cross-table thus composing the backrest with its support. It must be easy to assemble.
+                            </small></p>
+<!--                            <p class="text-white mb-1"><b><small>CONSTRUCTION</small></b></p>-->
+<!--                            <p><small class="text-muted">-->
+<!--                                Artek has also produced a 20-minute documentary “Enzo Mari for Artek: Homage to Autoprogettazione” in which Mari explains the idea behind the concept.-->
+<!--                            </small></p>-->
+<!--                            <p class="text-white mb-1"><b><small>FINISHES</small></b></p>-->
+<!--                            <p><small class="text-muted">-->
+<!--                                Artek has also produced a 20-minute documentary “Enzo Mari for Artek: Homage to Autoprogettazione” in which Mari explains the idea behind the concept.-->
+<!--                            </small></p>-->
+                        </div>
+                        <div class="col-6 mt-3 p-3">
+                            <h6 class="text-white mb-3">Dimensions</h6>
+                            <img class="img-fluid" src="assets/images/desc_tech.png" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.addEventListener('pointermove', onMouseMove);
+        let tech_specs_container = document.getElementById("tech_specs_container");
+        let spec_wrapper = document.getElementById("spec_wrapper");
+        let col_spec_wrapper = document.getElementById("col_spec_wrapper");
 
-            fdo_wrapper.addEventListener("mouseleave", (event) => {
-                fdo_wrapper.innerHTML = "italian politics&nbsp;";
-                clearInterval(fdo_wrapper_interval);
-            });
+        function onMouseMove(event) {
+            let x = event.clientX;
+            const delta_width = (window.innerWidth - spec_wrapper.offsetWidth) / 4;
+            if(x > window.innerWidth - delta_width) {
+                col_spec_wrapper.style.marginLeft = "-350px";
+                col_spec_wrapper.style.marginRight = "";
+            } else if (x < delta_width) {
+                col_spec_wrapper.style.marginLeft = "";
+                col_spec_wrapper.style.marginRight = "-350px";
+            }
+            else {
+                col_spec_wrapper.style.marginLeft = "";
+                col_spec_wrapper.style.marginRight = "";
+            }
 
-            var sdo_wrapper = document.getElementById("second_dash_wrapper");
-            var sdo_wrapper_interval = null;
-            sdo_wrapper.addEventListener("mouseenter", (event) => {
-                // highlight the mouseenter target
-                sdo_wrapper.innerText = "iconic fornitures_";
-                // reset the color after a short delay
-                sdo_wrapper_interval = setInterval(function () {
-                    if (sdo_wrapper.innerHTML === "iconic fornitures_") {
-                        sdo_wrapper.innerHTML = "iconic fornitures&nbsp;";
-                    } else {
-                        sdo_wrapper.innerHTML = "iconic fornitures_";
-                    }
-                }, 500);
-            }, false);
+        }
+    </script>
+    <script>
+        var btn_enter = document.getElementById("btn_enter");
+        var landing_wrapper = document.getElementById("landing_wrapper");
+        btn_enter.addEventListener("click", (event) => {
+            landing_wrapper.style.visibility = "hidden";
+            landing_wrapper.style.opacity = 0;
+        });
+        var fdo_wrapper = document.getElementById("first_dash_wrapper");
+        var fdo_wrapper_interval = null;
+        fdo_wrapper.addEventListener("mouseenter", (event) => {
+            // highlight the mouseenter target
+            fdo_wrapper.innerText = "italian politics_";
+            // reset the color after a short delay
+            fdo_wrapper_interval = setInterval(function () {
+                if (fdo_wrapper.innerHTML === "italian politics_") {
+                    fdo_wrapper.innerHTML = "italian politics&nbsp;";
+                } else {
+                    fdo_wrapper.innerHTML = "italian politics_";
+                }
+            }, 500);
+        }, false);
 
-            sdo_wrapper.addEventListener("mouseleave", (event) => {
-                sdo_wrapper.innerHTML = "iconic fornitures&nbsp;";
-                clearInterval(sdo_wrapper_interval);
-            });
+        fdo_wrapper.addEventListener("mouseleave", (event) => {
+            fdo_wrapper.innerHTML = "italian politics&nbsp;";
+            clearInterval(fdo_wrapper_interval);
+        });
 
-        </script>
-        <script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
-        crossorigin="anonymous">
-        </script>
+        var sdo_wrapper = document.getElementById("second_dash_wrapper");
+        var sdo_wrapper_interval = null;
+        sdo_wrapper.addEventListener("mouseenter", (event) => {
+            // highlight the mouseenter target
+            sdo_wrapper.innerText = "iconic fornitures_";
+            // reset the color after a short delay
+            sdo_wrapper_interval = setInterval(function () {
+                if (sdo_wrapper.innerHTML === "iconic fornitures_") {
+                    sdo_wrapper.innerHTML = "iconic fornitures&nbsp;";
+                } else {
+                    sdo_wrapper.innerHTML = "iconic fornitures_";
+                }
+            }, 500);
+        }, false);
 
-        <script type="module" src="bundle.js"></script>
+        sdo_wrapper.addEventListener("mouseleave", (event) => {
+            sdo_wrapper.innerHTML = "iconic fornitures&nbsp;";
+            clearInterval(sdo_wrapper_interval);
+        });
+
+    </script>
+    <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
+    crossorigin="anonymous">
+    </script>
+
+    <script type="module" src="bundle.js"></script>
     </body>
 </html>

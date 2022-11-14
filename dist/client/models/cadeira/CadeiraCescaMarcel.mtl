@@ -9,13 +9,13 @@ Ks 0.330000 0.330000 0.330000
 
 newmtl caneSeatPatch_colorized
 Ka 0.000000 0.000000 0.000000
-Kd 0.396078 0.345098 0.262745
+Kd 0.996078 0.945098 0.962745
 Ks 0.330000 0.330000 0.330000
-map_Kd CadeiraCescaMarcel/caneSeatPatch_colorized.png
+map_Kd caneSeatPatch_colorized.jpg
 
 newmtl chrome44
 Ka 0.000000 0.000000 0.000000
 Kd 0.670588 0.670588 0.670588
 Ks 0.330000 0.330000 0.330000
-map_Kd CadeiraCescaMarcel/chrome44.jpg
+map_Kd chrome44.jpg
 

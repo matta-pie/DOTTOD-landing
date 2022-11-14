@@ -1,0 +1,9 @@
+# Rhino
+newmtl enzo_mari_texture
+Ka 0.0000 0.0000 0.0000
+Kd 0.7000 0.7000 0.7000
+Ks 0.1000 0.1000 0.1000
+Tf 0.0000 0.0000 0.0000
+d 1.0000
+Ns 0.0000
+map_Kd enzo_mari_texture.jpg
