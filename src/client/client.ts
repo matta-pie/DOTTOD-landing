@@ -291,27 +291,27 @@ function loadModels() {
                 dottod_raycaster_objects.push(object);
                 piece = new Piece(object);
                 dottod_object.push(piece);
+                // if there's an ai twin
+                if (e.ai_twin !== null) {
+                    new MTLLoader()
+                        .setPath(e.ai_twin.path)
+                        .load(e.ai_twin.mtl, function ( materials ) {
+                            materials.preload();
+                            new OBJLoader()
+                                .setMaterials( materials )
+                                .setPath(e.ai_twin.path)
+                                .load(e.ai_twin.obj, function (object) {
+                                    object.name = e.ai_twin.name;
+                                    object.position.set(e.ai_twin.x,-2,e.ai_twin.z);
+                                    object.traverse(function (child){child.castShadow = true;});
+                                    object.scale.set(e.ai_twin.scale,e.ai_twin.scale,e.ai_twin.scale);
+                                    dottod_raycaster_objects.push(object);
+                                    piece.setTwin(object);
+                                }, onProgress );
+                        });
+                }
                 }, onProgress );
         });
-        // if there's an ai twin
-        if (e.ai_twin !== null) {
-            new MTLLoader()
-            .setPath(e.ai_twin.path)
-            .load(e.ai_twin.mtl, function ( materials ) {
-                materials.preload();
-                new OBJLoader()
-                    .setMaterials( materials )
-                    .setPath(e.ai_twin.path)
-                    .load(e.ai_twin.obj, function (object) {
-                        object.name = e.ai_twin.name;
-                        object.position.set(e.ai_twin.x,-2,e.ai_twin.z);
-                        object.traverse(function (child){child.castShadow = true;});
-                        object.scale.set(e.ai_twin.scale,e.ai_twin.scale,e.ai_twin.scale);
-                        dottod_raycaster_objects.push(object);
-                        piece.setTwin(object);
-                    }, onProgress );
-            });
-        }
     })
 
     const onProgress = function ( xhr: any ) {
