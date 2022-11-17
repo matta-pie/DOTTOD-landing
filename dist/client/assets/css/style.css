@@ -1,12 +1,11 @@
 @font-face {
-    font-family: 'Victor Mono';
-    src:  url('../fonts/VictorMono-Regular.woff2') format('woff2');
+    font-family: 'Dank Mono';
+    src:  url('../fonts/Dank Mono Regular.otf') format('otf');
 }
 @font-face {
-    font-family: "Victor Mono";
-    src: url('../fonts/VictorMono-Bold.woff2') format('woff2');
-    font-weight: bold;
-    font-style: normal;
+    font-family: "Dank Mono";
+    src: url('../fonts/Dank Mono Italic.otf') format('otf');
+    font-style: italic;
 }
 body {
     overflow: hidden;
@@ -14,7 +13,11 @@ body {
 }
 h1, h2, h3, h4, h5, p {
     color: white;
-    font-family: Victor Mono, monospace;
+    font-family: Dank Mono, monospace;
+}
+a {
+    text-decoration: none;
+    white-space: nowrap;
 }
 .ascii-title-wrapper {
     margin-top: 6%;
@@ -74,9 +77,6 @@ h1, h2, h3, h4, h5, p {
 }
 
 .tech-spec-wrapper {
-    padding: 20px;
-    border: 2px solid white;
-    background-color: black;
     position: relative;
 }
 .text-title {
@@ -88,11 +88,27 @@ h1, h2, h3, h4, h5, p {
     top: 15px;
     right: 15px;
 }
+
 #col_spec_wrapper {
     -webkit-transition: margin 2000ms;
     transition: margin 2000ms;
+    padding: 20px;
+    border: 2px solid white;
+    background-color: black;
+    height: 90%;
+    max-height: 600px;
+    overflow-y: scroll;
 }
-
+.img-enzo {
+    filter: invert(1);
+}
+.img-enzo:hover {
+    filter: invert(0);
+}
+hr {
+    border-top: 2px dashed white;
+    opacity: 0.5;
+}
 @media (min-width: 992px) {
     .ascii-title {
         white-space: pre-wrap;

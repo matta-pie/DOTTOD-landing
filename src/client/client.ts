@@ -101,8 +101,21 @@ function init() {
     controls.update();
 
     const btn_enter = document.getElementById("btn_enter");
-    if(btn_enter) {
+    const btn_enter2 = document.getElementById("btn_enter2");
+    const landing_wrapper = document.getElementById("landing_wrapper");
+
+    if(btn_enter && btn_enter2 && landing_wrapper) {
         btn_enter.addEventListener("click", () => {
+            landing_wrapper.style.visibility = "hidden";
+            landing_wrapper.style.opacity = "0";
+            dottod_object.forEach((piece: Piece) => {
+                scene.add(piece.original_model);
+                if(piece.ai_twin_model) scene.add(piece.ai_twin_model);
+            })
+        });
+        btn_enter2.addEventListener("click", () => {
+            landing_wrapper.style.visibility = "hidden";
+            landing_wrapper.style.opacity = "0";
             dottod_object.forEach((piece: Piece) => {
                 scene.add(piece.original_model);
                 if(piece.ai_twin_model) scene.add(piece.ai_twin_model);
